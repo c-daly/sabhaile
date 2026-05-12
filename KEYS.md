@@ -153,23 +153,20 @@ Format-on-save is on by default. Toggle per-session with `:FormatToggle`.
 
 ### Agents
 
-**avante.nvim** (Cursor-style inline agent, talks to Claude):
+**Claude Code** is the only active agent. Runs in a tmux pane (uses
+Max-sub OAuth — no API key required). No in-buffer plugin binding;
+the workflow is split-pane, not inline.
 
-| Keys | Action |
+| Step | Keys |
 | --- | --- |
-| `<leader>aa` | ask Avante about current selection / cursor context |
-| `<leader>ae` | edit selection via Avante (inline diff) |
-| `<leader>at` | toggle Avante panel |
-| `<leader>af` | focus Avante panel |
-| `<leader>ar` | refresh / regenerate response |
-| `<leader>ah` | toggle hints |
-| `<leader>ad` | debug toggle |
+| Split pane vertically | `prefix \|` (tmux) |
+| Launch agent in new pane | `claude` |
+| Hop back to editor | `prefix h` |
+| Hop back to agent | `prefix l` |
 
-Requires `ANTHROPIC_API_KEY` in env (sourced via `~/.config/secrets/anthropic.env`).
-
-**Claude Code:** runs in a tmux pane, no nvim binding. Use `prefix |`
-to split, `claude` to launch in the new pane, then `prefix h/l` to
-hop back to nvim.
+**avante.nvim** is committed but disabled (`enabled = false`) because
+it requires an Anthropic API key. Flip the flag in
+`dot_config/nvim/lua/plugins/agents.lua` if a key ever comes into play.
 
 ### which-key
 

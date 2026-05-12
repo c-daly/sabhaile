@@ -1,6 +1,10 @@
 return {
     {
         "yetone/avante.nvim",
+        -- Disabled: requires an Anthropic API key (no OAuth / Max-sub path).
+        -- Heavy agent work goes via Claude Code in a tmux pane instead;
+        -- flip `enabled = true` if/when an API key is in play.
+        enabled = false,
         event = "VeryLazy",
         version = false,
         build = "make",
