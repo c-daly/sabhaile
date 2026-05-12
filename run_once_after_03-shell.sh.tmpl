@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+zsh_path=$(command -v zsh)
+current=$(getent passwd "$USER" 2>/dev/null | awk -F: '{print $NF}' || echo "$SHELL")
+if [ "$current" != "$zsh_path" ]; then
+    if sudo -n true 2>/dev/null; then
+        sudo chsh -s "$zsh_path" "$USER"
+    else
+        chsh -s "$zsh_path"
+    fi
+fi

@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+{{ if eq .chezmoi.os "linux" -}}
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    clang lldb clangd clang-format cmake ninja-build ccache gdb \
+    dotnet-sdk-10.0
+{{ else if eq .chezmoi.os "darwin" -}}
+brew install --quiet llvm cmake ninja ccache dotnet-sdk
+{{ end -}}
+
+# uv-managed Python (cross-OS)
+if command -v uv >/dev/null; then
+    uv python install 3.12 3.13 2>/dev/null || true
+fi

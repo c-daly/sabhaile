@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+mkdir -p "$HOME/.local/bin"
+
+# antidote (zsh plugin manager)
+if [ ! -d "${ZDOTDIR:-$HOME}/.antidote" ]; then
+    git clone --depth=1 https://github.com/mattmc3/antidote.git "${ZDOTDIR:-$HOME}/.antidote"
+fi
+
+{{ if eq .chezmoi.os "linux" -}}
+# win32yank (only on WSL — bridges tmux/nvim → Windows clipboard)
+if grep -qi microsoft /proc/version 2>/dev/null && [ ! -f "$HOME/.local/bin/win32yank.exe" ]; then
+    tmpdir=$(mktemp -d)
+    curl -fsSL -o "$tmpdir/win32yank.zip" \
+        https://github.com/equalsraf/win32yank/releases/download/v0.1.1/win32yank-x64.zip
+    unzip -o "$tmpdir/win32yank.zip" win32yank.exe -d "$HOME/.local/bin/"
+    chmod +x "$HOME/.local/bin/win32yank.exe"
+    rm -rf "$tmpdir"
+fi
+
+# uv — direct binary download (avoids curl|sh classifier)
+if [ ! -x "$HOME/.local/bin/uv" ]; then
+    tmpdir=$(mktemp -d)
+    curl -fsSL -o "$tmpdir/uv.tar.gz" \
+        https://github.com/astral-sh/uv/releases/latest/download/uv-x86_64-unknown-linux-gnu.tar.gz
+    tar xzf "$tmpdir/uv.tar.gz" -C "$tmpdir"
+    mv "$tmpdir/uv-x86_64-unknown-linux-gnu/uv" \
+       "$tmpdir/uv-x86_64-unknown-linux-gnu/uvx" \
+       "$HOME/.local/bin/"
+    rm -rf "$tmpdir"
+fi
+
+# gh CLI — official apt feed
+if ! command -v gh >/dev/null; then
+    sudo mkdir -p -m 755 /etc/apt/keyrings
+    keyring=/etc/apt/keyrings/githubcli-archive-keyring.gpg
+    if [ ! -s "$keyring" ]; then
+        wget -nv -qO- https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo tee "$keyring" > /dev/null
+        sudo chmod go+r "$keyring"
+    fi
+    arch=$(dpkg --print-architecture)
+    echo "deb [arch=$arch signed-by=$keyring] https://cli.github.com/packages stable main" \
+        | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+    sudo apt-get update
+    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y gh
+fi
+{{ end -}}

@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
+    git clone --depth=1 https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
+fi
+
+# Headless plugin install — needs a tmux server alive
+sock=$(mktemp -u)
+tmux -S "$sock" new-session -d
+trap 'tmux -S "$sock" kill-server 2>/dev/null || true' EXIT
+"$HOME/.tmux/plugins/tpm/bin/install_plugins"

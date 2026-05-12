@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+{{ if eq .chezmoi.os "linux" -}}
+sudo apt-get update
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    build-essential curl wget git unzip ca-certificates \
+    software-properties-common gnupg lsb-release pkg-config \
+    zsh tmux age \
+    fzf ripgrep fd-find bat git-delta jq btop zoxide eza
+{{ else if eq .chezmoi.os "darwin" -}}
+echo "macOS bootstrap not yet implemented — see Later improvements in plan" >&2
+exit 1
+{{ else -}}
+echo "Unsupported OS: {{ .chezmoi.os }}" >&2
+exit 1
+{{ end -}}
