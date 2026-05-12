@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if ! command -v nvim >/dev/null; then
+    echo "Neovim not installed yet — skipping nvim bootstrap" >&2
+    exit 0
+fi
+
+# Bootstrap lazy.nvim and install/sync all plugins (also runs build steps like TSUpdate)
+nvim --headless "+Lazy! sync" +qa 2>&1 | tail -5
+
+# Write the Mason install script to a temp file (heredoc-in-quoted -c args
+# doesn't work — shell parses heredoc relative to outer command, lua sees `<`)
+bootstrap_lua=$(mktemp --suffix=.lua)
+trap 'rm -f "$bootstrap_lua"' EXIT
+
+cat > "$bootstrap_lua" <<'LUA'
+require('lazy').load({plugins = {'mason.nvim', 'mason-lspconfig.nvim'}})
+local registry = require('mason-registry')
+registry.refresh()
+local packages = {
+    'basedpyright', 'ruff', 'clangd',
+    'lua-language-server', 'json-lsp', 'yaml-language-server',
+    'bash-language-server', 'marksman',
+}
+for _, name in ipairs(packages) do
+    local ok, pkg = pcall(registry.get_package, name)
+    if ok and not pkg:is_installed() then
+        print('installing ' .. name)
+        pkg:install()
+    end
+end
+local done = vim.wait(300000, function()
+    for _, name in ipairs(packages) do
+        local ok, pkg = pcall(registry.get_package, name)
+        if not ok or not pkg:is_installed() then return false end
+    end
+    return true
+end, 1000)
+if done then
+    print('All Mason packages installed')
+    -- Settling time so finalisers (file moves, exec bits) complete before qa fires
+    vim.wait(5000)
+else
+    print('TIMEOUT waiting for Mason packages')
+    os.exit(1)
+end
+LUA
+
+nvim --headless -c "luafile $bootstrap_lua" -c "qa" 2>&1 | tail -10
