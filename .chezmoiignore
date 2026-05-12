@@ -1,3 +1,7 @@
+README.md
+LICENSE
+.github/
+
 .ssh/id_*
 .ssh/private_*
 .ssh/known_hosts
