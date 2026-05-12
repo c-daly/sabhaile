@@ -1,0 +1,5 @@
+romkatv/powerlevel10k
+zsh-users/zsh-autosuggestions
+Aloxaf/fzf-tab
+zsh-users/zsh-completions path:src kind:fpath
+zsh-users/zsh-syntax-highlighting

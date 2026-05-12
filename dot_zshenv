@@ -1,0 +1,13 @@
+typeset -U path PATH
+path=(
+    "$HOME/.local/bin"
+    "$HOME/.dotnet"
+    "$HOME/.dotnet/tools"
+    $path
+)
+export PATH
+
+export EDITOR=nvim
+export VISUAL=nvim
+export PAGER=less
+export LESS='-R'

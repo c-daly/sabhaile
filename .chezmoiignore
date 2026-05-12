@@ -1,0 +1,3 @@
+.ssh/id_*
+.ssh/private_*
+.config/chezmoi/key.txt
