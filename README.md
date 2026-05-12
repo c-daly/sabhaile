@@ -8,23 +8,31 @@ The name is Irish *sa bhaile* ("at home"), echoing chezmoi's *chez moi*.
 
 ## Bootstrap a fresh machine
 
+The single-script path (`bootstrap.sh` at the repo root) handles
+everything: prereq tools, gh auth, chezmoi init+apply, SSH key
+generation+upload, and `allowed_signers` update.
+
+While the repo is **private**, manually clone first:
+
 ```sh
-sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply c-daly/sabhaile
+gh repo clone c-daly/sabhaile /tmp/sabhaile && bash /tmp/sabhaile/bootstrap.sh
 ```
 
-That installs chezmoi, clones this repo, and runs the `run_once_*`
-scripts to land system packages, tools, plugins, and LSPs.
+When the repo is **public**:
 
-After the script finishes:
+```sh
+curl -fsSL https://raw.githubusercontent.com/c-daly/sabhaile/main/bootstrap.sh | bash
+```
 
-1. Drop the per-machine age private key at
-   `~/.config/chezmoi/key.txt` (see [Secrets](#secrets) below) — only
-   needed if the repo holds encrypted secrets you want decrypted on
-   this machine.
-2. `gh auth login` and upload this machine's new SSH public key
-   (`gh ssh-key add ~/.ssh/id_ed25519.pub`).
-3. Append this machine's public key to `private_dot_ssh/allowed_signers`
-   in this repo so `git log --show-signature` verifies cross-machine.
+The script is idempotent — re-run it if a step fails. Total time on
+a fresh machine is ~10–15 minutes (apt installs, Mason LSPs, Python
+interpreters via uv).
+
+The only thing the script does **not** do is import the age private
+key — that has to be human-supplied (don't put a private key fetch
+in a script anyone can run). Drop it at `~/.config/chezmoi/key.txt`
+and re-run `chezmoi apply` to decrypt any tracked secrets. See
+[Secrets](#secrets) below.
 
 ## Stack
 
