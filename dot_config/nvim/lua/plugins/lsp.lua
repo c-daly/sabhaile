@@ -25,7 +25,6 @@ return {
         "neovim/nvim-lspconfig",
         event = { "BufReadPre", "BufNewFile" },
         config = function()
-            local lspconfig = require("lspconfig")
             local capabilities = vim.lsp.protocol.make_client_capabilities()
             local ok, blink = pcall(require, "blink.cmp")
             if ok then
@@ -79,8 +78,9 @@ return {
             for name, config in pairs(servers) do
                 config.capabilities = capabilities
                 config.on_attach = on_attach
-                lspconfig[name].setup(config)
+                vim.lsp.config(name, config)
             end
+            vim.lsp.enable(vim.tbl_keys(servers))
 
             vim.diagnostic.config({
                 virtual_text = { spacing = 4, prefix = "●" },

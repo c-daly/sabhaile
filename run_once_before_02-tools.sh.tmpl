@@ -31,6 +31,18 @@ if [ ! -x "$HOME/.local/bin/uv" ]; then
     rm -rf "$tmpdir"
 fi
 
+# Neovim — direct binary download (apt on Resolute caps at 0.11; roslyn.nvim needs >=0.12)
+if ! "$HOME/.local/nvim-linux-x86_64/bin/nvim" --version 2>/dev/null \
+        | grep -qE "NVIM v0\.(1[2-9]|[2-9][0-9])"; then
+    tmpdir=$(mktemp -d)
+    curl -fsSL -o "$tmpdir/nvim.tar.gz" \
+        https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
+    rm -rf "$HOME/.local/nvim-linux-x86_64"
+    tar -C "$HOME/.local" -xzf "$tmpdir/nvim.tar.gz"
+    ln -sf "$HOME/.local/nvim-linux-x86_64/bin/nvim" "$HOME/.local/bin/nvim"
+    rm -rf "$tmpdir"
+fi
+
 # gh CLI — official apt feed
 if ! command -v gh >/dev/null; then
     sudo mkdir -p -m 755 /etc/apt/keyrings

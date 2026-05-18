@@ -12,14 +12,6 @@ The single-script path (`bootstrap.sh` at the repo root) handles
 everything: prereq tools, gh auth, chezmoi init+apply, SSH key
 generation+upload, and `allowed_signers` update.
 
-While the repo is **private**, manually clone first:
-
-```sh
-gh repo clone c-daly/sabhaile /tmp/sabhaile && bash /tmp/sabhaile/bootstrap.sh
-```
-
-When the repo is **public**:
-
 ```sh
 curl -fsSL https://raw.githubusercontent.com/c-daly/sabhaile/main/bootstrap.sh | bash
 ```

@@ -6,7 +6,7 @@ sudo apt-get update
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
     build-essential curl wget git unzip ca-certificates \
     software-properties-common gnupg lsb-release pkg-config \
-    zsh tmux age neovim \
+    zsh tmux age \
     fzf ripgrep fd-find bat git-delta jq btop zoxide eza \
     nodejs npm python3-venv python3-pip
 {{ else if eq .chezmoi.os "darwin" -}}
