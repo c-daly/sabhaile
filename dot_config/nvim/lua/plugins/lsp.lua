@@ -5,6 +5,10 @@ return {
         build = ":MasonUpdate",
         opts = {
             ui = { border = "rounded" },
+            registries = {
+                "github:mason-org/mason-registry",
+                "github:Crashdummyy/mason-registry",
+            },
         },
     },
     {
@@ -15,6 +19,7 @@ return {
             ensure_installed = {
                 "basedpyright", "ruff",
                 "clangd",
+                "ts_ls",
                 "lua_ls",
                 "jsonls", "yamlls", "bashls", "marksman",
             },
@@ -60,6 +65,7 @@ return {
                 clangd = {
                     cmd = { "clangd", "--background-index", "--clang-tidy", "--header-insertion=iwyu" },
                 },
+                ts_ls = {},
                 lua_ls = {
                     settings = {
                         Lua = {
@@ -75,9 +81,12 @@ return {
                 marksman = {},
             }
 
+            vim.lsp.config('*', {
+                capabilities = capabilities,
+                on_attach = on_attach,
+            })
+
             for name, config in pairs(servers) do
-                config.capabilities = capabilities
-                config.on_attach = on_attach
                 vim.lsp.config(name, config)
             end
             vim.lsp.enable(vim.tbl_keys(servers))

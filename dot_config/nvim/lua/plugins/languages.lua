@@ -1,10 +1,11 @@
 return {
     {
         "seblyng/roslyn.nvim",
-        ft = { "cs", "razor" },
-        dependencies = { "tris203/rzls.nvim" },
+        event = "VeryLazy",
         opts = {
-            args = { "--logLevel=Information", "--extensionLogDirectory=" .. vim.fn.stdpath("log") },
+            extensions = {
+                razor = { enabled = false },
+            },
         },
     },
 }
