@@ -26,3 +26,15 @@ autocmd("FileType", {
         vim.keymap.set("n", "q", "<cmd>close<cr>", { buffer = args.buf, silent = true })
     end,
 })
+
+-- Auto-reload files changed on disk when the buffer regains focus.
+-- Pairs with claudecode.nvim so external claude edits land live in the buffer.
+-- Guarded against the command-line window (q:) where checktime errors with E11.
+autocmd({ "FocusGained", "BufEnter", "CursorHold" }, {
+    group = augroup("AutoCheckTime", { clear = true }),
+    callback = function()
+        if vim.fn.getcmdwintype() == "" then
+            vim.cmd("checktime")
+        end
+    end,
+})

@@ -46,4 +46,29 @@ return {
             },
         },
     },
+    {
+        -- claudecode.nvim — bridges nvim to the `claude` CLI via WebSocket MCP.
+        -- Configured with provider="none": the plugin runs as server only, exposing
+        -- nvim's open buffers / selections / diffs to a claude process launched
+        -- externally (e.g., in a tmux pane via `claude --ide`, or with `/ide`
+        -- inside an already-running claude session). No managed terminal inside nvim.
+        --
+        -- `event = "VeryLazy"` is required (not just `keys`) so the WebSocket
+        -- server starts at nvim launch — otherwise the lock file in
+        -- ~/.claude/ide/ wouldn't exist until a keymap is pressed, and an
+        -- externally-launched `claude --ide` would have nothing to discover.
+        "coder/claudecode.nvim",
+        dependencies = { "folke/snacks.nvim" },
+        event = "VeryLazy",
+        opts = {
+            terminal = { provider = "none" },
+        },
+        keys = {
+            { "<leader>cb", "<cmd>ClaudeCodeAdd %<cr>",       desc = "Claude: add current buffer to context" },
+            { "<leader>cs", "<cmd>ClaudeCodeSend<cr>",        desc = "Claude: send selection", mode = "v" },
+            { "<leader>ca", "<cmd>ClaudeCodeDiffAccept<cr>",  desc = "Claude: accept diff" },
+            { "<leader>cd", "<cmd>ClaudeCodeDiffDeny<cr>",    desc = "Claude: deny diff" },
+            { "<leader>c?", "<cmd>ClaudeCodeStatus<cr>",      desc = "Claude: IDE socket status" },
+        },
+    },
 }
