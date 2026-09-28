@@ -39,7 +39,7 @@ and re-run `chezmoi apply` to decrypt any tracked secrets. See
 | LSP manager | nvim-lspconfig + [mason.nvim](https://github.com/williamboman/mason.nvim) |
 | LSPs | basedpyright, ruff, clangd, [roslyn.nvim](https://github.com/seblyng/roslyn.nvim), ts_ls, lua_ls, jsonls, yamlls, bashls, marksman |
 | Formatting | [conform.nvim](https://github.com/stevearc/conform.nvim), format on save; stylua, prettierd, shfmt via Mason |
-| Debugging | debugpy (Python) and netcoredbg (C#) adapters via Mason; the [nvim-dap](https://github.com/mfussenegger/nvim-dap) config that uses them is not in the repo yet |
+| Debugging | [nvim-dap](https://github.com/mfussenegger/nvim-dap) + nvim-dap-ui; debugpy (Python), netcoredbg (C#) via Mason |
 | Code text objects | [nvim-treesitter-textobjects](https://github.com/nvim-treesitter/nvim-treesitter-textobjects) (function / class / argument) |
 | Pane navigation | [vim-tmux-navigator](https://github.com/christoomey/vim-tmux-navigator): `C-h/j/k/l` across nvim splits and tmux panes |
 | AI agents | Claude Code in a tmux pane (KEYS.md → Agents); [avante.nvim](https://github.com/yetone/avante.nvim) is committed but disabled |

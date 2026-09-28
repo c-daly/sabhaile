@@ -373,6 +373,24 @@ back to the language server. `:FormatToggle` turns it off for the
 session; `<leader>F` formats on demand. `:ConformInfo` shows which
 formatter will run.
 
+### Debugging
+
+nvim-dap, with a UI that opens when a session starts and closes when it
+ends. Python runs under debugpy against the project's `.venv` / `venv` /
+`$VIRTUAL_ENV` interpreter; C# uses netcoredbg — `dotnet build` first,
+then give it the dll when asked. Everything is under `<leader>d`,
+because Windows Terminal takes the F-keys.
+
+| Do | Keys |
+| --- | --- |
+| Start, or continue to the next breakpoint | `<leader>dc` |
+| Toggle a breakpoint / set a conditional one | `<leader>db` / `<leader>dB` |
+| Step over / into / out | `<leader>do` / `<leader>di` / `<leader>dO` |
+| Run to the cursor | `<leader>dC` |
+| Evaluate the word under the cursor, or the selection | `<leader>de` |
+| Toggle the REPL / the UI | `<leader>dr` / `<leader>du` |
+| Run the last configuration again / terminate | `<leader>dl` / `<leader>dt` |
+
 ### Git without leaving
 
 Gitsigns marks added, changed and deleted lines in the gutter.
