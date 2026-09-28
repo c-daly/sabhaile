@@ -89,6 +89,34 @@ See [KEYS.md](KEYS.md) for tmux, zsh, and Neovim cheatsheets.
 Daily verbs: `chezmoi cd`, `chezmoi edit ~/.zshrc`, `chezmoi apply`,
 `chezmoi diff`, `chezmoi status`, `chezmoi add [--encrypt] <path>`.
 
+## Syncing between machines
+
+Edits flow `$HOME` → source repo → GitHub → other machines. The hop
+that is easy to forget is the first one.
+
+On the machine where the change was made:
+
+```sh
+chezmoi status                # "MM" rows were edited in $HOME since the last apply
+chezmoi re-add ~/.tmux.conf   # copy a $HOME edit back into the source
+chezmoi merge ~/.gitconfig    # same, for .tmpl sources (re-add skips templates)
+chezmoi add ~/.config/foo     # a brand-new file
+chezmoi cd && git add -A && git commit && git push
+```
+
+On every other machine:
+
+```sh
+chezmoi update                # git pull --autostash --rebase in the source, then apply
+```
+
+`chezmoi update` overwrites any `$HOME` file edited since its last apply
+(it prompts per file; `--force` skips the prompt). Keep machine-local
+lines out of the tracked copies: `~/.zshrc.local`, `~/.gitconfig.local`,
+and `~/.config/secrets/*.env` are all sourced by the tracked files and
+none of them are tracked. A `run_once_*` script whose content changed
+re-runs on the next apply.
+
 ## Secrets
 
 In-repo encryption via chezmoi's native [age](https://github.com/FiloSottile/age)
@@ -122,6 +150,10 @@ or rebind locally rather than editing the tracked config.
 - The `run_once_before_02-tools.sh` script auto-installs `win32yank`
   for tmux/nvim ↔ Windows clipboard bridge when `/proc/version`
   reports a Microsoft kernel.
+- If `chezmoi status` lists every managed file as ` M` with a mode-only
+  diff, the shell umask is `0002` (Ubuntu's private-group default) and
+  chezmoi is trying to write 0664/0775. Pin `umask = 0o022` at the top
+  of `~/.config/chezmoi/chezmoi.toml`, above the `[age]` table.
 
 ## macOS
 

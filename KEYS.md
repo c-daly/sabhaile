@@ -73,6 +73,7 @@ Source: [`dot_tmux.conf`](dot_tmux.conf),
 - `zsh-autosuggestions` — ghost-text suggestion as you type, accept with `→` or `End`
 - `zsh-syntax-highlighting` — invalid commands turn red live
 - `zsh-completions` — extra completion definitions
+- `zsh-history-substring-search` — type a prefix, then `↑` / `↓` step through history entries containing it (both cursor-key modes are bound, so it works under tmux and ssh)
 
 **fzf keybindings (default):**
 - `Ctrl-R` — fuzzy search shell history
@@ -87,7 +88,7 @@ Source: [`dot_tmux.conf`](dot_tmux.conf),
 | Command | Runs |
 | --- | --- |
 | `ls`, `ll`, `la`, `tree` | eza variants with git/icons |
-| `cat` | `bat -p` (paged on long files via `LESS=-R`) |
+| `cat`, `less` | `batcat -p` / `batcat` on Ubuntu, `bat -p` / `bat` where the binary is named `bat` (paged on long files via `LESS=-R`) |
 | `top` | `btop` |
 | `fd` | `fdfind` (Ubuntu names the binary `fdfind`) |
 | `g` | `git` |

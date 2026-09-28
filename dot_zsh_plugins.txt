@@ -3,3 +3,4 @@ zsh-users/zsh-autosuggestions
 Aloxaf/fzf-tab
 zsh-users/zsh-completions path:src kind:fpath
 zsh-users/zsh-syntax-highlighting
+zsh-users/zsh-history-substring-search

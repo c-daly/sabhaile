@@ -48,6 +48,17 @@ alias g='git'
 command -v fzf >/dev/null && eval "$(fzf --zsh)" 2>/dev/null
 command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
 
+# zsh-history-substring-search ships no keybindings of its own (unlike the
+# oh-my-zsh wrapper). Bind here, after the plugin is sourced and after fzf
+# has had its chance to rebind. Both ^[[X and ^[OX are bound so the keys work
+# whether or not the terminal is in application-cursor mode (tmux, ssh).
+if (( $+widgets[history-substring-search-up] )); then
+    bindkey '^[[A' history-substring-search-up
+    bindkey '^[OA' history-substring-search-up
+    bindkey '^[[B' history-substring-search-down
+    bindkey '^[OB' history-substring-search-down
+fi
+
 [[ -d ~/.config/secrets ]] && for f in ~/.config/secrets/*.env(N); do source "$f"; done
 
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
