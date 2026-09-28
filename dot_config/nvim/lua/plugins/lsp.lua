@@ -23,7 +23,6 @@ return {
                 "lua_ls",
                 "jsonls", "yamlls", "bashls", "marksman",
             },
-            automatic_installation = true,
         },
     },
     {
@@ -42,7 +41,6 @@ return {
                 end
                 map("n", "gd", vim.lsp.buf.definition, "Goto definition")
                 map("n", "gD", vim.lsp.buf.declaration, "Goto declaration")
-                map("n", "gr", vim.lsp.buf.references, "References")
                 map("n", "gi", vim.lsp.buf.implementation, "Goto implementation")
                 map("n", "K", vim.lsp.buf.hover, "Hover")
                 map("n", "<leader>rn", vim.lsp.buf.rename, "Rename")

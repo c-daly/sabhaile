@@ -9,9 +9,9 @@ return {
                 python = { "ruff_format", "ruff_fix" },
                 c = { "clang-format" },
                 cpp = { "clang-format" },
-                json = { "prettierd", "prettier" },
-                yaml = { "prettierd", "prettier" },
-                markdown = { "prettierd", "prettier" },
+                json = { "prettierd", "prettier", stop_after_first = true },
+                yaml = { "prettierd", "prettier", stop_after_first = true },
+                markdown = { "prettierd", "prettier", stop_after_first = true },
                 sh = { "shfmt" },
             },
             format_on_save = function(bufnr)

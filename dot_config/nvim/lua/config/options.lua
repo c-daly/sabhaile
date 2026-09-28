@@ -45,6 +45,17 @@ opt.shortmess:append("sI")
 
 opt.fillchars = { eob = " " }
 
+-- Treesitter-driven folding; everything starts open
+opt.foldmethod = "expr"
+opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+opt.foldtext = ""
+opt.foldlevel = 99
+opt.foldlevelstart = 99
+
+-- Optional plugins bundled with Nvim 0.12
+vim.cmd.packadd("nvim.undotree")
+vim.cmd.packadd("nvim.difftool")
+
 if vim.fn.has("wsl") == 1 then
     vim.g.clipboard = {
         name = "win32yank",

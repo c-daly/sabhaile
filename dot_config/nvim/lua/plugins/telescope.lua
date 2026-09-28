@@ -10,6 +10,12 @@ return {
             { "<leader>fr", function() require("telescope.builtin").oldfiles() end, desc = "Recent files" },
             { "<leader>fs", function() require("telescope.builtin").lsp_document_symbols() end, desc = "Symbols" },
             { "<leader>/", function() require("telescope.builtin").current_buffer_fuzzy_find() end, desc = "Buffer search" },
+            { "<leader>fR", function() require("telescope.builtin").resume() end, desc = "Resume last picker" },
+            { "<leader>fd", function() require("telescope.builtin").diagnostics() end, desc = "Diagnostics" },
+            { "<leader>fw", function() require("telescope.builtin").grep_string() end, desc = "Grep word under cursor" },
+            { "<leader>fu", function() require("telescope.builtin").lsp_references() end, desc = "LSP references (usages)" },
+            { "<leader>fk", function() require("telescope.builtin").keymaps() end, desc = "Keymaps" },
+            { "<leader>gs", function() require("telescope.builtin").git_status() end, desc = "Git status" },
         },
         dependencies = {
             "nvim-lua/plenary.nvim",

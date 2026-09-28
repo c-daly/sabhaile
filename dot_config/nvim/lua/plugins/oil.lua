@@ -21,6 +21,9 @@ return {
                 ["_"] = "actions.open_cwd",
                 ["gs"] = "actions.change_sort",
                 ["g."] = "actions.toggle_hidden",
+                -- Oil's defaults put split/refresh here; free them for window/tmux navigation
+                ["<C-h>"] = false,
+                ["<C-l>"] = false,
             },
         },
     },

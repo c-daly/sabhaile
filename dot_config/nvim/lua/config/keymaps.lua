@@ -18,16 +18,18 @@ map("v", ">", ">gv")
 map("v", "J", ":m '>+1<cr>gv=gv", { desc = "Move selection down" })
 map("v", "K", ":m '<-2<cr>gv=gv", { desc = "Move selection up" })
 
-map("n", "<C-h>", "<C-w>h")
-map("n", "<C-j>", "<C-w>j")
-map("n", "<C-k>", "<C-w>k")
-map("n", "<C-l>", "<C-w>l")
+-- <C-h/j/k/l> window + tmux pane navigation lives in plugins/editor.lua (vim-tmux-navigator)
 
 map("n", "<leader>h", "<cmd>nohlsearch<cr>", { desc = "Clear highlight" })
 
-map("n", "[d", vim.diagnostic.goto_prev, { desc = "Prev diagnostic" })
-map("n", "]d", vim.diagnostic.goto_next, { desc = "Next diagnostic" })
+map("n", "[d", function() vim.diagnostic.jump({ count = -1, float = true }) end, { desc = "Prev diagnostic" })
+map("n", "]d", function() vim.diagnostic.jump({ count = 1, float = true }) end, { desc = "Next diagnostic" })
 map("n", "<leader>e", vim.diagnostic.open_float, { desc = "Diagnostic float" })
+
+map("n", "<leader>uh", function()
+    vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = 0 }), { bufnr = 0 })
+end, { desc = "Toggle inlay hints" })
+map("n", "<leader>uu", "<cmd>Undotree<cr>", { desc = "Undo tree" })
 
 map("n", "<leader>x", "<cmd>bdelete<cr>", { desc = "Close buffer" })
 map("n", "<S-h>", "<cmd>bprevious<cr>", { desc = "Prev buffer" })

@@ -33,10 +33,15 @@ and re-run `chezmoi apply` to decrypt any tracked secrets. See
 | Shell | zsh + [antidote](https://github.com/mattmc3/antidote) (static plugin cache) |
 | Prompt | [powerlevel10k](https://github.com/romkatv/powerlevel10k) |
 | Multiplexer | tmux + [tpm](https://github.com/tmux-plugins/tpm) — prefix `C-a` |
+| tmux plugins | sensible, yank (via win32yank), resurrect + continuum (auto save/restore, incl. Claude Code panes), [catppuccin](https://github.com/catppuccin/tmux) v2.3.0, vim-tmux-navigator, [tmux-fingers](https://github.com/Morantron/tmux-fingers) (copy hints) |
 | Editor | Neovim, handwritten Lua config on [lazy.nvim](https://github.com/folke/lazy.nvim) |
 | Completion | [blink.cmp](https://github.com/saghen/blink.cmp) + LuaSnip |
 | LSP manager | nvim-lspconfig + [mason.nvim](https://github.com/williamboman/mason.nvim) |
 | LSPs | basedpyright, ruff, clangd, [roslyn.nvim](https://github.com/seblyng/roslyn.nvim), lua_ls, jsonls, yamlls, bashls, marksman |
+| Formatting | [conform.nvim](https://github.com/stevearc/conform.nvim), format on save; stylua, prettierd, shfmt via Mason |
+| Debugging | [nvim-dap](https://github.com/mfussenegger/nvim-dap) + nvim-dap-ui; debugpy (Python), netcoredbg (C#) via Mason |
+| Code text objects | [nvim-treesitter-textobjects](https://github.com/nvim-treesitter/nvim-treesitter-textobjects) (function / class / argument) |
+| Pane navigation | [vim-tmux-navigator](https://github.com/christoomey/vim-tmux-navigator): `C-h/j/k/l` across nvim splits and tmux panes |
 | AI agents | [avante.nvim](https://github.com/yetone/avante.nvim) (inline) + Claude Code (tmux pane) |
 | Python | [uv](https://github.com/astral-sh/uv) |
 | C / C++ | clang, clangd, cmake, ninja, ccache, gdb |
@@ -62,8 +67,8 @@ See [KEYS.md](KEYS.md) for tmux, zsh, and Neovim cheatsheets.
 ├── run_once_before_01-system-packages.sh.tmpl    # apt installs
 ├── run_once_before_02-tools.sh.tmpl              # antidote, win32yank, uv, gh
 ├── run_once_after_03-shell.sh.tmpl               # chsh to zsh
-├── run_once_after_04-nvim.sh.tmpl                # Lazy sync + Mason install
-├── run_once_after_05-tmux.sh.tmpl                # tpm + plugins
+├── run_once_after_04-nvim.sh.tmpl                # Lazy sync + Mason LSPs, formatters, debug adapters
+├── run_once_after_05-tmux.sh.tmpl                # tpm + plugins + tmux-fingers binary
 ├── run_once_after_06-toolchains.sh.tmpl          # .NET, C/C++, uv-managed Python
 ├── .chezmoiignore                                # defensive ignores (private keys, secrets)
 └── .chezmoidata.toml                             # public defaults (name, no-reply email)

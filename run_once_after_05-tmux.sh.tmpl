@@ -5,8 +5,25 @@ if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
     git clone --depth=1 https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
 fi
 
-# Headless plugin install — needs a tmux server alive
+# Headless plugin install — needs a tmux server alive. -f /dev/null keeps it from
+# loading ~/.tmux.conf, where continuum would restore saved sessions (and relaunch
+# Claude panes) into this throwaway server.
 sock=$(mktemp -u)
-tmux -S "$sock" new-session -d
+tmux -S "$sock" -f /dev/null new-session -d
 trap 'tmux -S "$sock" kill-server 2>/dev/null || true' EXIT
 "$HOME/.tmux/plugins/tpm/bin/install_plugins"
+
+# tmux-fingers needs its binary. Fetch the release matching the plugin checkout, and
+# link it onto PATH so the plugin finds it without scanning Windows PATH entries (/mnt).
+fingers="$HOME/.tmux/plugins/tmux-fingers"
+if [ -d "$fingers" ] && [ ! -x "$fingers/bin/tmux-fingers" ] && [ "$(uname -sm)" = "Linux x86_64" ]; then
+    version=$(sed -n 's/^version: *//p' "$fingers/shard.yml")
+    mkdir -p "$fingers/bin"
+    curl -fsSL "https://github.com/Morantron/tmux-fingers/releases/download/${version}/tmux-fingers-${version}-linux-x86_64" \
+        -o "$fingers/bin/tmux-fingers"
+    chmod a+x "$fingers/bin/tmux-fingers"
+fi
+if [ -x "$fingers/bin/tmux-fingers" ]; then
+    mkdir -p "$HOME/.local/bin"
+    ln -sfn "$fingers/bin/tmux-fingers" "$HOME/.local/bin/tmux-fingers"
+fi

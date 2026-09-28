@@ -8,7 +8,8 @@ are linked at the end of each section — go there to add/change.
 ## tmux
 
 **Prefix is `C-a`** (rebound from default `C-b`). All bindings below
-assume "prefix" means `C-a`.
+assume "prefix" means `C-a`. `C-a C-a` sends a literal `C-a` to the
+program (start of line in the shell); `prefix a` jumps to the last window.
 
 | Action | Keys |
 | --- | --- |
@@ -16,27 +17,52 @@ assume "prefix" means `C-a`.
 | Horizontal split | `prefix -` |
 | New window in same dir | `prefix c` |
 | Move between panes (vim-style) | `prefix h / j / k / l` |
-| Mouse: drag to resize, click to focus | `set -g mouse on` is on |
+| Move between panes **and nvim splits**, no prefix | `C-h / j / k / l` *(vim-tmux-navigator; works in copy mode too)* |
+| Jump back to the previous pane | `C-\` or `prefix ;` |
+| Clear the shell screen (`C-l` is taken by the navigator) | `prefix C-l` |
+| Zoom the pane to full window (again to unzoom) | `prefix z` |
+| Floating scratch shell in the current dir (`exit` closes it) | `prefix P` |
+| Next / previous window **with an alert** (e.g. Claude rang the bell) | `prefix M-n` / `prefix M-p` |
+| Mouse: drag to resize, click to focus, right-click for menus | `set -g mouse on` is on |
 | Reload config | `prefix r` |
 | Detach session | `prefix d` (default) |
-| List sessions | `prefix s` (default) |
+| Pick a session / window, with preview | `prefix s` / `prefix w` (default) |
+
+**What you see:** each pane's border shows its title (Claude Code and
+Codex set it to the current task). The status bar shows the session on
+the left and the directory and time on the right. A window where a
+program rang the bell gets a bell icon. Exiting the last shell in a
+session switches to another session instead of dropping out of tmux.
 
 **Copy mode (vi-style):**
-- Enter copy mode: `prefix [`
-- Start selection: `v`
-- Yank to Windows clipboard: `y` *(piped through `win32yank.exe -i --crlf`)*
-- Mouse-drag selection also copies to Windows clipboard automatically.
+- Enter copy mode: `prefix [` (or scroll up with the mouse wheel)
+- Search: `/` down, `?` up, then `n` / `N`
+- Start selection: `v` (`V` whole lines, `C-v` rectangle)
+- Yank to Windows clipboard: `y` *(tmux-yank, piped through `win32yank.exe -i --crlf`; exits copy mode)*
+- Mouse-drag selection also copies to the Windows clipboard.
 - Exit: `q`
 
-**Plugin keybindings (via tpm):**
-- `prefix I` — install new plugins listed in `~/.tmux.conf`
-- `prefix U` — update plugins
-- `prefix C-s` — save session (tmux-resurrect)
-- `prefix C-r` — restore session
+**Plugin keybindings:**
+- `prefix F` / `prefix J`: tmux-fingers hint mode / jump mode. Paths,
+  SHAs, URLs, IPs and numbers on screen get a letter; type it to copy
+  (`Shift`+letter also pastes it into the pane).
+- `prefix y` / `prefix Y`: copy the shell command line / the pane's
+  working directory (tmux-yank)
+- `prefix I` / `prefix U`: install / update plugins (tpm)
+- `prefix C-s` / `prefix C-r`: save / restore sessions now (tmux-resurrect)
 
-**Sessions auto-restore on tmux start** (tmux-continuum).
+**Sessions auto-save every 15 minutes and restore when tmux starts**
+(tmux-continuum). nvim comes back open; Claude Code panes come back as
+`claude --continue`, which resumes the latest conversation *in that
+directory* (two Claude panes in one directory both resume the same one).
 
-Source: [`dot_tmux.conf`](dot_tmux.conf)
+**Claude Code in tmux:** Shift+Enter inserts a newline (extended keys
+are on), and Claude rings the terminal bell when it finishes or waits for
+permission while you're away (`preferredNotifChannel: "terminal_bell"` in `~/.claude/settings.json`,
+which is not managed by this repo).
+
+Source: [`dot_tmux.conf`](dot_tmux.conf),
+[`run_once_after_05-tmux.sh.tmpl`](run_once_after_05-tmux.sh.tmpl) (plugins + the tmux-fingers binary)
 
 ---
 
@@ -91,7 +117,24 @@ Source: [`dot_zshrc`](dot_zshrc), [`dot_zsh_plugins.txt`](dot_zsh_plugins.txt)
 | `n` / `N` | next/prev search match, **centered** |
 | `<C-d>` / `<C-u>` | half-page scroll, **centered** |
 | `<S-h>` / `<S-l>` | previous/next buffer |
-| `<C-h/j/k/l>` | window navigation |
+| `<C-h/j/k/l>` | window navigation; at the edge of nvim it moves into the neighbouring tmux pane |
+| `<leader>uh` | toggle LSP inlay hints (inline types / parameter names) |
+| `<leader>uu` | undo tree (`:Undotree`), browse and jump to any earlier state |
+| `ZR` / `:restart` | restart nvim in place (e.g. after a config change) |
+
+`:DiffTool {left} {right}` compares two files or directories (built in, loaded at startup).
+
+Files changed on disk (e.g. by Claude Code in another pane) **reload automatically**: on focus or
+buffer switch, and every second while in Normal mode. A `Reloaded <file>` notice shows each time.
+
+### Folding (treesitter)
+
+Folds follow the syntax tree (functions, classes, blocks). Files open with everything unfolded.
+
+| Keys | Action |
+| --- | --- |
+| `za` | toggle the fold under the cursor |
+| `zM` / `zR` | close all / open all folds |
 
 ### Visual mode
 
@@ -99,6 +142,7 @@ Source: [`dot_zshrc`](dot_zshrc), [`dot_zsh_plugins.txt`](dot_zsh_plugins.txt)
 | --- | --- |
 | `<` / `>` | re-indent and keep selection |
 | `J` / `K` | move selected lines down/up |
+| `an` / `in` | grow / shrink the selection by syntax node (built in, 0.12) |
 
 ### LSP (active when an LSP attaches to the buffer)
 
@@ -106,15 +150,28 @@ Source: [`dot_zshrc`](dot_zshrc), [`dot_zsh_plugins.txt`](dot_zsh_plugins.txt)
 | --- | --- |
 | `gd` | goto definition |
 | `gD` | goto declaration |
-| `gr` | references |
 | `gi` | goto implementation |
 | `K` | hover docs |
 | `<leader>rn` | rename symbol |
 | `<leader>ca` | code action menu |
 | `<leader>F` | format buffer |
-| `[d` / `]d` | prev/next diagnostic |
+| `[d` / `]d` | prev/next diagnostic, opening its float |
+
+**Nvim 0.12 built-in LSP keys** (no config needed):
+
+| Keys | Action |
+| --- | --- |
+| `grr` | references |
+| `gri` | goto implementation |
+| `grn` | rename |
+| `gra` | code action (Normal and Visual) |
+| `grt` | goto type definition |
+| `grx` | run code lens |
+| `gO` | document symbols |
+| `<C-s>` (Insert) | signature help |
 
 Format-on-save is on by default. Toggle per-session with `:FormatToggle`.
+Formatters (stylua, prettierd, shfmt) are installed by Mason via `run_once_after_04-nvim.sh.tmpl`.
 
 ### Telescope (fuzzy finder)
 
@@ -127,6 +184,12 @@ Format-on-save is on by default. Toggle per-session with `:FormatToggle`.
 | `<leader>fr` | recent files |
 | `<leader>fs` | LSP document symbols |
 | `<leader>/` | fuzzy search current buffer |
+| `<leader>fR` | reopen the last picker, with its query |
+| `<leader>fd` | diagnostics |
+| `<leader>fw` | grep the word under the cursor |
+| `<leader>fu` | LSP references (usages) |
+| `<leader>fk` | search keymaps |
+| `<leader>gs` | git status (changed files) |
 
 ### File system (oil.nvim)
 
@@ -137,6 +200,7 @@ Format-on-save is on by default. Toggle per-session with `:FormatToggle`.
 | `<C-v>` / `<C-x>` | open in vertical/horizontal split |
 | `<C-p>` | preview file |
 | `g.` | toggle hidden files |
+| `<C-h>` / `<C-l>` | window/pane navigation, same as everywhere else (oil's own split/refresh on these keys is turned off) |
 | Edit the buffer to rename/delete/create | save with `:w` to apply |
 
 ### Git
@@ -144,12 +208,48 @@ Format-on-save is on by default. Toggle per-session with `:FormatToggle`.
 | Keys | Action |
 | --- | --- |
 | `]h` / `[h` | next/prev hunk |
-| `<leader>hs` | stage hunk |
-| `<leader>hr` | reset hunk |
+| `<leader>hs` | stage hunk (in Visual mode: stage just the selected lines) |
+| `<leader>hr` | reset hunk (in Visual mode: reset just the selected lines) |
+| `<leader>hS` / `<leader>hR` | stage / reset the whole buffer |
 | `<leader>hp` | preview hunk |
+| `<leader>hd` | diff the buffer against the index |
 | `<leader>hb` | full blame for current line |
+| `<leader>ub` | toggle inline blame on the current line |
+| `ih` | hunk text object: `vih` selects a hunk, `dih` deletes it |
+| `<leader>gs` | telescope git status |
 | `:Git` | open fugitive status (full git porcelain) |
-| `:Gvdiff` | vertical diff against index |
+| `:Gvdiffsplit` / `:Gdiffsplit` | vertical / horizontal diff against index |
+
+### Code text objects (treesitter)
+
+Use after an operator (`d`, `c`, `y`) or in Visual mode, e.g. `daf` deletes a function, `vic` selects a class body.
+
+| Keys | Action |
+| --- | --- |
+| `af` / `if` | around / inside function |
+| `ac` / `ic` | around / inside class |
+| `aa` / `ia` | around / inside argument |
+| `]m` / `[m` | next / prev function start (`]M` / `[M` for the end) |
+| `]]` / `[[` | next / prev class start (`][` / `[]` for the end) |
+
+### Debugging (nvim-dap)
+
+Python (debugpy, uses the project's `.venv` / `venv` / `$VIRTUAL_ENV`) and C# (netcoredbg: run
+`dotnet build` first, then pick the dll). The debug UI opens when a session starts and closes when
+it ends. There are no F-key bindings, because Windows Terminal takes F11.
+
+| Keys | Action |
+| --- | --- |
+| `<leader>dc` | start / continue |
+| `<leader>db` | toggle breakpoint |
+| `<leader>dB` | conditional breakpoint |
+| `<leader>do` / `<leader>di` / `<leader>dO` | step over / into / out |
+| `<leader>dC` | run to cursor |
+| `<leader>dl` | run last configuration again |
+| `<leader>dt` | terminate |
+| `<leader>dr` | toggle REPL |
+| `<leader>du` | toggle debug UI |
+| `<leader>de` | evaluate expression (word under cursor, or selection) |
 
 ### Agents
 
@@ -161,8 +261,10 @@ the workflow is split-pane, not inline.
 | --- | --- |
 | Split pane vertically | `prefix \|` (tmux) |
 | Launch agent in new pane | `claude` |
-| Hop back to editor | `prefix h` |
-| Hop back to agent | `prefix l` |
+| Hop back to editor | `C-h` (or `prefix h`) |
+| Hop back to agent | `C-l` (or `prefix l`) |
+
+Claude's edits to open files reload in nvim on their own, within about a second (see Core).
 
 **avante.nvim** is committed but disabled (`enabled = false`) because
 it requires an Anthropic API key. Flip the flag in
@@ -174,6 +276,11 @@ Hold any leader key (`<space>`) for ~400ms and `which-key` shows a
 popup of available continuations. Useful when you forget a binding.
 
 Source: [`dot_config/nvim/lua/config/keymaps.lua`](dot_config/nvim/lua/config/keymaps.lua),
+[`dot_config/nvim/lua/config/options.lua`](dot_config/nvim/lua/config/options.lua),
+[`dot_config/nvim/lua/config/autocmds.lua`](dot_config/nvim/lua/config/autocmds.lua),
+[`dot_config/nvim/lua/plugins/editor.lua`](dot_config/nvim/lua/plugins/editor.lua),
+[`dot_config/nvim/lua/plugins/treesitter.lua`](dot_config/nvim/lua/plugins/treesitter.lua),
+[`dot_config/nvim/lua/plugins/debug.lua`](dot_config/nvim/lua/plugins/debug.lua),
 [`dot_config/nvim/lua/plugins/lsp.lua`](dot_config/nvim/lua/plugins/lsp.lua),
 [`dot_config/nvim/lua/plugins/telescope.lua`](dot_config/nvim/lua/plugins/telescope.lua),
 [`dot_config/nvim/lua/plugins/oil.lua`](dot_config/nvim/lua/plugins/oil.lua),
@@ -199,7 +306,7 @@ the standard X11/Wayland clipboard.
 **Refactor with Claude Code:**
 1. `tmux new -s <project>` (or attach to existing)
 2. `prefix |` to split, `claude` in the new pane, point at the repo
-3. Edit / review / accept Claude's changes in nvim with `:Gvdiff` / gitsigns
+3. Edit / review / accept Claude's changes in nvim with `:Gvdiffsplit` / gitsigns (`]h`, `<leader>hp`, `<leader>hd`)
 
 **Fast file jumping in nvim:**
 1. `<leader>ff` (telescope find) — fuzzy by filename
