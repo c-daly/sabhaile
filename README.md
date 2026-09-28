@@ -50,9 +50,11 @@ and re-run `chezmoi apply` to decrypt any tracked secrets. See
 | Clipboard bridge (WSL) | win32yank |
 | Terminal font | any Nerd Font without the `Mono` suffix (JetBrainsMono Nerd Font, MesloLGS NF, Hack Nerd Font, …) |
 
-## Keybindings
+## Using it
 
-See [KEYS.md](KEYS.md) for tmux, zsh, and Neovim cheatsheets.
+See [GUIDE.md](GUIDE.md) for how the pieces fit together and how to work
+in them day to day, and [KEYS.md](KEYS.md) for the full tmux, zsh, and
+Neovim key tables.
 
 ## Layout
 

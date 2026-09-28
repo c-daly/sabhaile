@@ -92,7 +92,7 @@ Source: [`dot_tmux.conf`](dot_tmux.conf),
 | `top` | `btop` |
 | `fd` | `fdfind` (Ubuntu names the binary `fdfind`) |
 | `g` | `git` |
-| `cd` | rewired to zoxide's `__zoxide_z` (still accepts plain paths) |
+| `z`, `zi` | zoxide jump / interactive pick (plain `cd` is untouched) |
 
 **Local override:** `~/.zshrc.local` is sourced if present (untracked, per-machine).
 
@@ -314,10 +314,10 @@ the standard X11/Wayland clipboard.
 2. `<leader>fg` (telescope live-grep) — fuzzy by content
 3. Or in oil: `-` to view parent dir as buffer, edit-to-navigate
 
-**Ask AI to fix the function under cursor:**
-1. Visual-select the function (`vap` for paragraph, or `Vif` for inner-function via treesitter text-objects)
-2. `<leader>ae` — Avante prompts for an edit instruction, applies as inline diff
-3. Accept the diff or hit `u` to undo
+**Ask Claude to fix the function under cursor:**
+1. Put the cursor in it and note the file and function name (`<leader>fs` lists symbols)
+2. `C-l` into the Claude pane, ask for the change by file and function
+3. Back in nvim (`C-h`) the buffer reloads on its own; review with `]h` / `<leader>hp`, undo with `u` or `<leader>hr`
 
 **Search across project (zsh):**
 1. `rg <pattern>` — ripgrep (no aliased `grep`; muscle memory keeps `grep` for system grep)
