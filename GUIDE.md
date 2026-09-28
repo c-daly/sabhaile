@@ -555,8 +555,8 @@ theme.
 
 **An nvim plugin misbehaves after an update.** `:Lazy` shows the commit
 each plugin is on; `:Lazy restore` goes back to the lock file, `:Lazy
-log` shows what changed. For the LSP, `:checkhealth vim.lsp` and
-`:LspLog`.
+log` shows what changed. For the LSP, `:checkhealth vim.lsp`, and the
+log at `~/.local/state/nvim/lsp.log`.
 
 **The prompt shows a warning about instant prompt.** Something in
 `.zshrc` printed before the instant-prompt block. Move it below, or
