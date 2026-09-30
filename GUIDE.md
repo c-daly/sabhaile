@@ -348,6 +348,17 @@ with clang-tidy and include-what-you-use header insertion), roslyn (C#),
 ts_ls (TypeScript), lua_ls, and servers for JSON, YAML, bash and
 Markdown. They attach automatically when you open a matching file.
 
+Every Mason package (these servers, the formatters and the debug
+adapters) is listed once, in mason-tool-installer's `ensure_installed` in
+`plugins/lsp.lua`. Anything missing installs in the background when nvim
+starts, so a deleted or newly added package sorts itself out on the next
+launch. Roslyn comes from an extra registry (`Crashdummyy/mason-registry`,
+set in the same file) because the main one does not carry it.
+
+Markdown files render in place (markview): headings, lists, tables,
+callouts, code blocks and LaTeX maths. Insert mode shows the raw text;
+`<leader>um` turns rendering off and `<leader>us` opens it in a side split.
+
 | Do | Keys |
 | --- | --- |
 | Definition / declaration / implementation | `gd` / `gD` / `gi` |
@@ -492,8 +503,8 @@ README's "Syncing between machines" section has the full loop.
 | add a tmux binding or option | `dot_tmux.conf` | apply, `prefix r` |
 | add a tmux plugin | `dot_tmux.conf` (`@plugin` line) | apply, `prefix I` |
 | add an nvim plugin | new spec in `dot_config/nvim/lua/plugins/<concern>.lua` | `chezmoi add` if the file is new; `:Lazy sync` |
-| add a language server | `ensure_installed` and `servers` in `plugins/lsp.lua`, plus the package list in `run_once_after_04-nvim.sh.tmpl` | `:Mason` installs it, or restart nvim |
-| add a formatter | `formatters_by_ft` in `plugins/formatting.lua`, plus the Mason list | |
+| add a language server | its Mason package name in `ensure_installed`, and its config in `servers`, both in `plugins/lsp.lua` | restart nvim; it installs itself |
+| add a formatter | `formatters_by_ft` in `plugins/formatting.lua`, plus its Mason package in `ensure_installed` in `plugins/lsp.lua` | restart nvim |
 | add an nvim keymap | `lua/config/keymaps.lua` (general) or the plugin's spec (`keys = {}`) | `:restart`; then KEYS.md |
 | add an apt package for all machines | `run_once_before_01-system-packages.sh.tmpl` | install it by hand here (the script already ran; see below) |
 | add a git alias or setting | `dot_gitconfig.tmpl` | apply |
@@ -506,8 +517,10 @@ there first.
 ### run_once scripts
 
 They run once per machine — precisely, once per *content*: change a
-script and it runs again on the next apply, which is how new Mason
-packages and tmux plugins arrive. They are written to be idempotent
+script and it runs again on the next apply, which is how new tmux
+plugins arrive. (Mason packages install themselves when nvim starts; the
+nvim script just does it up front, from the same list, and fails if any
+are missing.) They are written to be idempotent
 (each step checks before acting). To re-run them all on purpose:
 
 ```sh
@@ -522,6 +535,7 @@ chezmoi state delete-bucket --bucket=scriptState && chezmoi apply
 | nvim plugins | `:Lazy update` (no automatic checks; `lazy-lock.json` is not tracked, so each machine floats) |
 | language servers, formatters | `:Mason`, then `U` |
 | treesitter parsers | `:TSUpdate` |
+| tree-sitter CLI | a binary at `~/.local/bin/tree-sitter`; delete it and re-run the tools script to fetch the latest release |
 | tmux plugins | `prefix U` |
 | zsh plugins | `source ~/.antidote/antidote.zsh && antidote update`, then open a new shell (the static bundle sources the updated clones) |
 | apt packages | `sudo apt update && sudo apt upgrade` |
@@ -617,7 +631,8 @@ BACKLOG.md for deferred work and KEYS.md for keys.
 10. **Read diffs in delta.** `g lg` to find the commit, `g show` to read
     it, `n`/`N` to move between files.
 11. **When you forget a key, ask the tool:** `Space` and wait, or
-    `<leader>fk`, or `prefix ?` in tmux, before opening KEYS.md.
+    `<leader>fk`, or `prefix ?` in tmux, or `keys -s` (`prefix K`) for
+    this config's own bindings from KEYS.md.
 12. **Change the source, not `$HOME`.** If you catch yourself editing
     `~/.zshrc`, stop and `chezmoi edit ~/.zshrc` instead. Commit the
     change and its KEYS.md line together.

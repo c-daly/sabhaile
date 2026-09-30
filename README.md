@@ -36,11 +36,13 @@ and re-run `chezmoi apply` to decrypt any tracked secrets. See
 | tmux plugins | sensible, yank (via win32yank), resurrect + continuum (auto save/restore, incl. Claude Code panes), [catppuccin](https://github.com/catppuccin/tmux) v2.3.0, vim-tmux-navigator, [tmux-fingers](https://github.com/Morantron/tmux-fingers) (copy hints) |
 | Editor | Neovim ≥ 0.12 from the release tarball (apt stops at 0.11), handwritten Lua config on [lazy.nvim](https://github.com/folke/lazy.nvim) |
 | Completion | [blink.cmp](https://github.com/saghen/blink.cmp) + LuaSnip |
-| LSP manager | nvim-lspconfig + [mason.nvim](https://github.com/williamboman/mason.nvim) |
+| LSP manager | nvim-lspconfig + [mason.nvim](https://github.com/williamboman/mason.nvim); [mason-tool-installer](https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim) installs every server, formatter and debug adapter from one list on startup |
 | LSPs | basedpyright, ruff, clangd, [roslyn.nvim](https://github.com/seblyng/roslyn.nvim), ts_ls, lua_ls, jsonls, yamlls, bashls, marksman |
 | Formatting | [conform.nvim](https://github.com/stevearc/conform.nvim), format on save; stylua, prettierd, shfmt via Mason |
 | Debugging | [nvim-dap](https://github.com/mfussenegger/nvim-dap) + nvim-dap-ui; debugpy (Python), netcoredbg (C#) via Mason |
+| Syntax | [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) `main` branch; parsers built by the tree-sitter CLI (release binary, apt stops at 0.25) |
 | Code text objects | [nvim-treesitter-textobjects](https://github.com/nvim-treesitter/nvim-treesitter-textobjects) (function / class / argument) |
+| Markdown | [markview.nvim](https://github.com/OXY2DEV/markview.nvim): renders in the buffer, including LaTeX maths |
 | Pane navigation | [vim-tmux-navigator](https://github.com/christoomey/vim-tmux-navigator): `C-h/j/k/l` across nvim splits and tmux panes |
 | AI agents | Claude Code in a tmux pane (KEYS.md → Agents); [avante.nvim](https://github.com/yetone/avante.nvim) is committed but disabled |
 | Python | [uv](https://github.com/astral-sh/uv) |
@@ -64,12 +66,13 @@ Neovim key tables.
 ├── dot_p10k.zsh                                  # prompt
 ├── dot_tmux.conf                                 # tmux
 ├── dot_config/nvim/                              # neovim (init.lua + lua/{config,plugins})
+├── dot_local/bin/executable_keys                 # `keys`: KEYS.md as a terminal cheat sheet
 ├── dot_gitconfig.tmpl                            # git: delta pager + SSH commit signing
 ├── private_dot_ssh/allowed_signers               # public keys for SSH commit verification
 ├── run_once_before_01-system-packages.sh.tmpl    # apt installs
-├── run_once_before_02-tools.sh.tmpl              # antidote, win32yank, uv, Neovim tarball, gh
+├── run_once_before_02-tools.sh.tmpl              # antidote, win32yank, uv, Neovim tarball, tree-sitter CLI, gh
 ├── run_once_after_03-shell.sh.tmpl               # chsh to zsh
-├── run_once_after_04-nvim.sh.tmpl                # Lazy sync + Mason LSPs, formatters, debug adapters
+├── run_once_after_04-nvim.sh.tmpl                # Lazy sync + treesitter parsers, then the Mason list from plugins/lsp.lua
 ├── run_once_after_05-tmux.sh.tmpl                # tpm + plugins + tmux-fingers binary
 ├── run_once_after_06-toolchains.sh.tmpl          # .NET, C/C++, uv-managed Python
 ├── .chezmoiignore                                # defensive ignores (private keys, secrets)

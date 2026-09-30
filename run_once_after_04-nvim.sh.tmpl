@@ -6,7 +6,16 @@ if ! command -v nvim >/dev/null; then
     exit 0
 fi
 
-# Bootstrap lazy.nvim and install/sync all plugins (also runs build steps like TSUpdate)
+# nvim-treesitter moved from master to main (2026-09-30). master compiled parsers into the
+# plugin's own parser/ and parser-info/ dirs, which main neither tracks nor ignores, so they'd
+# linger and shadow main's (built into ~/.local/share/nvim/site/parser). Drop only the build
+# output: the .gitignore in each is tracked on master, and without it lazy sees a dirty tree
+# and won't switch branches.
+ts="$HOME/.local/share/nvim/lazy/nvim-treesitter"
+rm -f "$ts/parser/"*.so "$ts/parser-info/"*.revision
+
+# Bootstrap lazy.nvim and install/sync all plugins (also runs build steps like TSUpdate,
+# and nvim-treesitter's config waits for its parsers to build when headless)
 nvim --headless "+Lazy! sync" +qa 2>&1 | tail -5
 
 # Write the Mason install script to a temp file (heredoc-in-quoted -c args
@@ -14,40 +23,32 @@ nvim --headless "+Lazy! sync" +qa 2>&1 | tail -5
 bootstrap_lua=$(mktemp --suffix=.lua)
 trap 'rm -f "$bootstrap_lua"' EXIT
 
+# The package list lives in plugins/lsp.lua (mason-tool-installer's ensure_installed);
+# install it synchronously, then fail loudly if anything is still missing.
 cat > "$bootstrap_lua" <<'LUA'
-require('lazy').load({plugins = {'mason.nvim', 'mason-lspconfig.nvim'}})
-local registry = require('mason-registry')
-registry.refresh()
-local packages = {
-    'basedpyright', 'ruff', 'clangd',
-    'lua-language-server', 'json-lsp', 'yaml-language-server',
-    'bash-language-server', 'marksman',
-    -- formatters (conform.nvim) and debug adapters (nvim-dap)
-    'stylua', 'prettierd', 'shfmt',
-    'debugpy', 'netcoredbg',
-}
-for _, name in ipairs(packages) do
-    local ok, pkg = pcall(registry.get_package, name)
-    if ok and not pkg:is_installed() then
-        print('installing ' .. name)
-        pkg:install()
-    end
-end
-local done = vim.wait(300000, function()
-    for _, name in ipairs(packages) do
-        local ok, pkg = pcall(registry.get_package, name)
-        if not ok or not pkg:is_installed() then return false end
-    end
-    return true
-end, 1000)
-if done then
-    print('All Mason packages installed')
-    -- Settling time so finalisers (file moves, exec bits) complete before qa fires
-    vim.wait(5000)
-else
-    print('TIMEOUT waiting for Mason packages')
+-- A Lua error here would otherwise fall through to qa and exit 0
+local ok, err = pcall(vim.cmd, 'MasonToolsInstallSync')
+if not ok then
+    print('MasonToolsInstallSync failed: ' .. tostring(err))
     os.exit(1)
 end
+local plugin = require('lazy.core.config').plugins['mason-tool-installer.nvim']
+local packages = require('lazy.core.plugin').values(plugin, 'opts', false).ensure_installed
+local registry = require('mason-registry')
+local missing = {}
+for _, name in ipairs(packages) do
+    if not registry.is_installed(name) then
+        table.insert(missing, name)
+    end
+end
+if #missing > 0 then
+    print('Mason packages failed to install: ' .. table.concat(missing, ', '))
+    os.exit(1)
+end
+print('All Mason packages installed')
+-- Settling time so finalisers (file moves, exec bits) complete before qa fires
+vim.wait(5000)
 LUA
 
-nvim --headless -c "luafile $bootstrap_lua" -c "qa" 2>&1 | tail -10
+# MasonToolsInstallSync has no timeout of its own
+timeout 900 nvim --headless -c "luafile $bootstrap_lua" -c "qa" 2>&1 | tail -10

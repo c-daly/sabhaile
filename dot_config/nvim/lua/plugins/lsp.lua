@@ -15,15 +15,39 @@ return {
         "mason-org/mason-lspconfig.nvim",
         dependencies = { "mason-org/mason.nvim", "neovim/nvim-lspconfig" },
         event = { "BufReadPre", "BufNewFile" },
+        opts = {},
+    },
+    {
+        -- Every Mason package, installed in the background on startup if missing. One list
+        -- covers what mason-lspconfig can't: roslyn (not an lspconfig server, comes from the
+        -- Crashdummyy registry above), formatters and debug adapters. The bootstrap
+        -- (run_once_after_04-nvim) runs :MasonToolsInstallSync against the same list.
+        "WhoIsSethDaniel/mason-tool-installer.nvim",
+        dependencies = { "mason-org/mason.nvim" },
+        event = "VeryLazy",
+        cmd = { "MasonToolsInstall", "MasonToolsInstallSync", "MasonToolsUpdate", "MasonToolsClean" },
         opts = {
             ensure_installed = {
-                "basedpyright", "ruff",
-                "clangd",
-                "ts_ls",
-                "lua_ls",
-                "jsonls", "yamlls", "bashls", "marksman",
+                -- language servers
+                "basedpyright", "ruff", "clangd", "roslyn",
+                "typescript-language-server", "lua-language-server",
+                "json-lsp", "yaml-language-server", "bash-language-server", "marksman",
+                -- formatters (conform.nvim)
+                "stylua", "prettierd", "shfmt",
+                -- debug adapters (nvim-dap)
+                "debugpy", "netcoredbg",
             },
         },
+        config = function(_, opts)
+            local mti = require("mason-tool-installer")
+            mti.setup(opts)
+            -- Its own startup check hangs off VimEnter, which has already fired by VeryLazy.
+            -- Loaded before VimEnter (the bootstrap's :MasonToolsInstallSync), leave it be:
+            -- a second, async check racing the sync one can leave the sync one waiting forever.
+            if vim.v.vim_did_enter == 1 then
+                mti.run_on_start()
+            end
+        end,
     },
     {
         "neovim/nvim-lspconfig",

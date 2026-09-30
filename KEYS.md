@@ -3,6 +3,10 @@
 Concise reference for the keys this config binds. Source-of-truth files
 are linked at the end of each section — go there to add/change.
 
+Read it in the terminal with `keys` (or `prefix K` in tmux for a popup).
+`keys tmux`, `keys zsh`, `keys vim` or any heading (`keys git`) shows
+one section; `keys -s` fuzzy-searches every binding.
+
 ---
 
 ## tmux
@@ -22,6 +26,7 @@ program (start of line in the shell); `prefix a` jumps to the last window.
 | Clear the shell screen (`C-l` is taken by the navigator) | `prefix C-l` |
 | Zoom the pane to full window (again to unzoom) | `prefix z` |
 | Floating scratch shell in the current dir (`exit` closes it) | `prefix P` |
+| This cheat sheet in a popup (`/` searches, `q` closes) | `prefix K` |
 | Next / previous window **with an alert** (e.g. Claude rang the bell) | `prefix M-n` / `prefix M-p` |
 | Mouse: drag to resize, click to focus, right-click for menus | `set -g mouse on` is on |
 | Reload config | `prefix r` |
@@ -121,6 +126,8 @@ Source: [`dot_zshrc`](dot_zshrc), [`dot_zsh_plugins.txt`](dot_zsh_plugins.txt)
 | `<C-h/j/k/l>` | window navigation; at the edge of nvim it moves into the neighbouring tmux pane |
 | `<leader>uh` | toggle LSP inlay hints (inline types / parameter names) |
 | `<leader>uu` | undo tree (`:Undotree`), browse and jump to any earlier state |
+| `<leader>um` | markdown: toggle the rendered preview (on by default; insert mode shows raw text) |
+| `<leader>us` | markdown: toggle a side split with the rendered preview, the buffer stays raw |
 | `ZR` / `:restart` | restart nvim in place (e.g. after a config change) |
 
 `:DiffTool {left} {right}` compares two files or directories (built in, loaded at startup).
@@ -172,7 +179,7 @@ Folds follow the syntax tree (functions, classes, blocks). Files open with every
 | `<C-s>` (Insert) | signature help |
 
 Format-on-save is on by default. Toggle per-session with `:FormatToggle`.
-Formatters (stylua, prettierd, shfmt) are installed by Mason via `run_once_after_04-nvim.sh.tmpl`.
+Formatters (stylua, prettierd, shfmt) are installed by Mason; the list is `ensure_installed` in `plugins/lsp.lua`.
 
 ### Telescope (fuzzy finder)
 

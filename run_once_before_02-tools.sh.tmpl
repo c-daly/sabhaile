@@ -43,6 +43,15 @@ if ! "$HOME/.local/nvim-linux-x86_64/bin/nvim" --version 2>/dev/null \
     rm -rf "$tmpdir"
 fi
 
+# tree-sitter CLI — direct binary download (apt on Resolute caps at 0.25; nvim-treesitter
+# main needs >=0.26.1 to build parsers, and the latex parser needs it on any branch)
+if ! "$HOME/.local/bin/tree-sitter" --version 2>/dev/null \
+        | grep -qE "tree-sitter 0\.(2[6-9]|[3-9][0-9])"; then
+    curl -fsSL https://github.com/tree-sitter/tree-sitter/releases/latest/download/tree-sitter-linux-x64.gz \
+        | gunzip > "$HOME/.local/bin/tree-sitter"
+    chmod +x "$HOME/.local/bin/tree-sitter"
+fi
+
 # gh CLI — official apt feed
 if ! command -v gh >/dev/null; then
     sudo mkdir -p -m 755 /etc/apt/keyrings
